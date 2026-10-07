@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
-import axios, { Axios } from "axios";
+import axios from "axios";
 
-const API_URL = "http://localhost:5000/students";
 
 function App() {
   const [student, setStudents] = useState([]);
@@ -12,7 +11,7 @@ function App() {
 
   const fetchStud = () =>{
     axios
-    .get(API_URL)
+    .get("http://localhost:5000/students")
     .then((response) => {
       setStudents(response.data);
     })
@@ -31,61 +30,81 @@ function App() {
     const studData ={name, course, age: Number(age)}
 
     if(editId) {
-      axios.put(`${API_URL}/${editId}`, studData).then(() =>{
+      axios.put(`${"http://localhost:5000/students"}/${editId}`, studData).then(() =>{
         fetchStud();
         resetForm();
       })
     }else {
-      axios.post(API_URL, studData).then(()=> {
+      axios.post("http://localhost:5000/students", studData).then(()=> {
         fetchStud();
         resetForm();
       })
     }
   }
 
+  const handleEdit = (student) => {
+    setEditId(student._id);
+    setName(student.name);
+    setCourse(student.course);
+    setAge(student.age);
+  }
+
+  const handleDelete = (id) => {
+    axios.delete(`${"http://localhost:5000/students"}/${id}`).then(() => {
+      fetchStud();
+    })
+  }
+
   useEffect(() => {
     fetchStud();
-  }, [])
+  });
 
   return (
-    <div>
-      <h1>Student Management System</h1>
-      
-      <h2>Students</h2>
+    <>
+      <div>
+        <h1>Student Management System</h1>
+        
+        <h2>Add Student</h2>
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Name: </label>
-          <input type="text" value={name} 
-          onChange={(e) => setName(e.target.value)}/>
-        </div>
+          <div>
+            <label>Name: </label>
+            <input type="text" value={name} 
+            onChange={(e) => setName(e.target.value)} required/>
+          </div>
 
-        <div>
-          <label>Course: </label>
-          <input type="text" value={course}
-          onChange={(e) => setCourse(e.target.value)}/>
-        </div>
+          <div>
+            <label>Course: </label>
+            <input type="text" value={course}
+            onChange={(e) => setCourse(e.target.value)} required/>
+          </div>
 
-        <div>
-          <label>Age: </label>
-          <input type="number" value={age}
-          onChange={(e) => setAge(e.target.value)}/>
-        </div>
+          <div>
+            <label>Age: </label>
+            <input type="number" value={age}
+            onChange={(e) => setAge(e.target.value)} required/>
+          </div>
 
-        <button type='submit' onClick={handleSubmit}>Add Student</button>
-      </form>
+          <button  onClick={handleSubmit}>
+            {editId ? "Update Student" : "Add Student"}
+          </button>
 
+        <h2>List of Students:</h2>
 
-      {student.map((students) => (
-        <div key={students.id}>
-          <p>Name: {students.name}</p>
-          <p>Course: {students.course}</p>
-          <p>Age: {students.age}</p>
-          <br></br>
-        </div>
-      ))}
+        {student.map((student) => (
+          <div key={student._id}>
+            <p>Name: {student.name}</p>
+            <p>Course: {student.course}</p>
+            <p>Age: {student.age}</p>
+            <button onClick={() => handleEdit(student)}>Edit</button>
+            <br/>
+            <button onClick={() => handleDelete(student._id)}>Delete</button>
+            <hr/>
+            <br/>
+          </div>
+        ))}
 
-    </div>
+      </div>
+    </>
   )
 }
 
