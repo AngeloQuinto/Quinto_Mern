@@ -11,7 +11,7 @@ function App() {
     axios
     .get("http://localhost:5000/students")
     .then((response) => {
-      console.log(response.data);
+      setStudents(response.data);
     })
   }
 
@@ -20,7 +20,9 @@ function App() {
 
     const studData ={name, course, age: Number(age)}
 
-    fetchStud();
+    axios.put("http://localhost:5000/students", studData).then(()=> {
+      fetchStud();
+    })
   }
 
   useEffect(() => {
@@ -54,6 +56,7 @@ function App() {
 
         <button type='submit' onClick={handleSubmit}>Add Student</button>
       </form>
+
 
       {student.map((student) => (
         <div key={student.id}>
