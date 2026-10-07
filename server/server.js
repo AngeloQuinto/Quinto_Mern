@@ -29,6 +29,14 @@ app.get("/students", async (req, res) => {
 
     res.json(students);
 });
+
+app.post("/student", async (req, res) =>{
+    const student = new Student ({
+        name: body.req.name,
+        course: body.req.course,
+        age: body.req.age,
+    })
+})
  
 app.listen(5000, () => {
     console.log("Server running on port 5000");

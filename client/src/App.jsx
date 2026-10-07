@@ -2,17 +2,30 @@ import { useEffect, useState } from 'react'
 import axios from "axios";
 
 function App() {
-  
   const [student, setStudents] = useState([]);
+  const [name, setName] = useState("");
+  const [course, setCourse] = useState("");
+  const [age, setAge] = useState("");
 
-  useEffect(() => {
-
+  const fetchStud = () =>{
     axios
     .get("http://localhost:5000/students")
     .then((response) => {
-      setStudents(response.data);
+      console.log(response.data);
     })
-  })
+  }
+
+  const handleSubmit = (e) =>{
+    e.preventDefault();
+
+    const studData ={name, course, age: Number(age)}
+
+    fetchStud();
+  }
+
+  useEffect(() => {
+    fetchStud();
+  }, [])
   return (
     <>
     <div>
@@ -20,20 +33,26 @@ function App() {
       
       <h2>Students</h2>
 
-      <form>
+      <form onSubmit={handleSubmit}>
         <div>
           <label>Name: </label>
-          <input />
-        </div>
-        <div>
-          <label>Course: </label>
-          <input />
-        </div>
-        <div>
-          <label>Age: </label>
-          <input />
+          <input type="text" value={name} 
+          onChange={(e) => setName(e.target.value)}/>
         </div>
 
+        <div>
+          <label>Course: </label>
+          <input type="text" value={course}
+          onChange={(e) => setCourse(e.target.value)}/>
+        </div>
+
+        <div>
+          <label>Age: </label>
+          <input type="number" value={age}
+          onChange={(e) => setAge(e.target.value)}/>
+        </div>
+
+        <button type='submit' onClick={handleSubmit}>Add Student</button>
       </form>
 
       {student.map((student) => (
