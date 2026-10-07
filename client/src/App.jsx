@@ -1,18 +1,28 @@
 import { useEffect, useState } from 'react'
-import axios from "axios";
+import axios, { Axios } from "axios";
+
+const API_URL = "http://localhost:5000/students";
 
 function App() {
   const [student, setStudents] = useState([]);
   const [name, setName] = useState("");
   const [course, setCourse] = useState("");
   const [age, setAge] = useState("");
+  const [editId, setEditId] = useState(null)
 
   const fetchStud = () =>{
     axios
-    .get("http://localhost:5000/students")
+    .get(API_URL)
     .then((response) => {
       setStudents(response.data);
     })
+  }
+
+  const resetForm = () =>{
+    setName("");
+    setCourse("");
+    setAge("");
+    setEditId(null);
   }
 
   const handleSubmit = (e) =>{
@@ -20,16 +30,24 @@ function App() {
 
     const studData ={name, course, age: Number(age)}
 
-    axios.put("http://localhost:5000/students", studData).then(()=> {
-      fetchStud();
-    })
+    if(editId) {
+      axios.put(`${API_URL}/${editId}`, studData).then(() =>{
+        fetchStud();
+        resetForm();
+      })
+    }else {
+      axios.post(API_URL, studData).then(()=> {
+        fetchStud();
+        resetForm();
+      })
+    }
   }
 
   useEffect(() => {
     fetchStud();
   }, [])
+
   return (
-    <>
     <div>
       <h1>Student Management System</h1>
       
@@ -58,16 +76,16 @@ function App() {
       </form>
 
 
-      {student.map((student) => (
-        <div key={student.id}>
-          <p>Name: {student.name}</p>
-          <p>Course: {student.course}</p>
-          <p>Age: {student.age}</p>
+      {student.map((students) => (
+        <div key={students.id}>
+          <p>Name: {students.name}</p>
+          <p>Course: {students.course}</p>
+          <p>Age: {students.age}</p>
+          <br></br>
         </div>
       ))}
 
     </div>
-    </>
   )
 }
 
